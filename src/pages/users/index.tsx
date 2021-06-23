@@ -1,10 +1,30 @@
-import { Text, Box, Flex, Heading, Button, Icon, Table, Thead, Tr, Th, Td, Checkbox, Tbody } from "@chakra-ui/react";
+import {
+  Text,
+  Box,
+  Flex,
+  Heading,
+  Button,
+  Icon,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Td,
+  Checkbox,
+  Tbody,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { RiAddLine, RiEditLine } from "react-icons/ri";
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Sidebar } from "../../components/Sidebar";
 
 export default function UserList() {
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
   return (
     <Box>
       <Header />
@@ -14,7 +34,9 @@ export default function UserList() {
 
         <Box flex="1" borderRadius={8} bg="gray.800" p="8">
           <Flex mb="8" justify="space-between" align="center">
-            <Heading size="lg" fontWeight="normal">Usuários</Heading>
+            <Heading size="lg" fontWeight="normal">
+              Usuários
+            </Heading>
 
             <Button
               as="a"
@@ -29,51 +51,47 @@ export default function UserList() {
           <Table colorScheme="whiteAlpha">
             <Thead>
               <Tr>
-                <Th px="6" color="gray.300" width="8">
+                <Th px={["4", "4", "6"]} color="gray.300" width="8">
                   <Checkbox colorScheme="pink" />
                 </Th>
-                <Th>
-                  Usuário
-                </Th>
-                <Th>
-                  Data de cadastro
-                </Th>
-                <Th width="8" />
+                <Th>Usuário</Th>
+                {isWideVersion && <Th>Data de cadastro</Th>}
+                {isWideVersion && (<Th width="8" />)}
               </Tr>
             </Thead>
 
             <Tbody>
               <Tr>
-                <Td px="6">
+                <Td px={["4", "4", "6"]}>
                   <Checkbox colorScheme="pink" />
                 </Td>
                 <Td>
                   <Box>
                     <Text fontWeight="bold">Gustavo Carvalho</Text>
-                    <Text fontSize="small" color="gray.300">gustavocrvl42@gmail.com</Text>
+                    <Text fontSize="small" color="gray.300">
+                      gustavocrvl42@gmail.com
+                    </Text>
                   </Box>
                 </Td>
-                <Td>
-                  04 de Abril, 2021
-                </Td>
-                <Td>
-                  <Button
-                    as="a"
-                    size="sm"
-                    fontSize="sm"
-                    colorScheme="purple"
-                    leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                  >
-                    Editar
-                  </Button>
-                </Td>
+                {isWideVersion && <Td>04 de Abril, 2021</Td>}
+                {isWideVersion && (
+                  <Td>
+                    <Button
+                      as="a"
+                      size="sm"
+                      fontSize="sm"
+                      colorScheme="purple"
+                      leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                    ></Button>
+                  </Td>
+                )}
               </Tr>
             </Tbody>
           </Table>
 
-          <Pagination/>
+          <Pagination />
         </Box>
       </Flex>
     </Box>
-  )
+  );
 }
