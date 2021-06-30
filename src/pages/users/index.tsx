@@ -12,10 +12,12 @@ import {
   Td,
   Checkbox,
   Tbody,
+  Spinner,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { RiAddLine, RiEditLine } from "react-icons/ri";
 import Link from "next/link";
+import { useQuery } from "react-query";
 
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
@@ -23,16 +25,18 @@ import { Sidebar } from "../../components/Sidebar";
 import { useEffect } from "react";
 
 export default function UserList() {
+  const { data, isLoading, isError } = useQuery("users", async () => {
+    const response = await fetch("http://localhost:3000/api/users");
+    const data = response.json();
+    return data;
+  });
+
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   });
 
-  useEffect(() => {
-    fetch("http://localhost:3000/api/users")
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <Box>
@@ -59,48 +63,58 @@ export default function UserList() {
               </Button>
             </Link>
           </Flex>
-          <Table colorScheme="whiteAlpha">
-            <Thead>
-              <Tr>
-                <Th px={["4", "4", "6"]} color="gray.300" width="8">
-                  <Checkbox colorScheme="pink" />
-                </Th>
-                <Th>Usuário</Th>
-                {isWideVersion && <Th>Data de cadastro</Th>}
-                {isWideVersion && <Th width="8" />}
-              </Tr>
-            </Thead>
+          {isLoading ? (
+            <Flex justify="center">
+              <Spinner />
+            </Flex>
+          ) : isError ? (
+            <Flex justify="center">Falha ao obter dados dos usuários</Flex>
+          ) : (
+            <>
+              <Table colorScheme="whiteAlpha">
+                <Thead>
+                  <Tr>
+                    <Th px={["4", "4", "6"]} color="gray.300" width="8">
+                      <Checkbox colorScheme="pink" />
+                    </Th>
+                    <Th>Usuário</Th>
+                    {isWideVersion && <Th>Data de cadastro</Th>}
+                    {isWideVersion && <Th width="8" />}
+                  </Tr>
+                </Thead>
 
-            <Tbody>
-              <Tr>
-                <Td px={["4", "4", "6"]}>
-                  <Checkbox colorScheme="pink" />
-                </Td>
-                <Td>
-                  <Box>
-                    <Text fontWeight="bold">Gustavo Carvalho</Text>
-                    <Text fontSize="small" color="gray.300">
-                      gustavocrvl42@gmail.com
-                    </Text>
-                  </Box>
-                </Td>
-                {isWideVersion && <Td>04 de Abril, 2021</Td>}
-                {isWideVersion && (
-                  <Td>
-                    <Button
-                      as="a"
-                      size="sm"
-                      fontSize="sm"
-                      colorScheme="purple"
-                      leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                    ></Button>
-                  </Td>
-                )}
-              </Tr>
-            </Tbody>
-          </Table>
+                <Tbody>
+                  <Tr>
+                    <Td px={["4", "4", "6"]}>
+                      <Checkbox colorScheme="pink" />
+                    </Td>
+                    <Td>
+                      <Box>
+                        <Text fontWeight="bold">Gustavo Carvalho</Text>
+                        <Text fontSize="small" color="gray.300">
+                          gustavocrvl42@gmail.com
+                        </Text>
+                      </Box>
+                    </Td>
+                    {isWideVersion && <Td>04 de Abril, 2021</Td>}
+                    {isWideVersion && (
+                      <Td>
+                        <Button
+                          as="a"
+                          size="sm"
+                          fontSize="sm"
+                          colorScheme="purple"
+                          leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                        ></Button>
+                      </Td>
+                    )}
+                  </Tr>
+                </Tbody>
+              </Table>
 
-          <Pagination />
+              <Pagination />
+            </>
+          )}
         </Box>
       </Flex>
     </Box>
