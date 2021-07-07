@@ -24,11 +24,31 @@ import { Pagination } from "../../components/Pagination";
 import { Sidebar } from "../../components/Sidebar";
 import { useEffect } from "react";
 
+type User = {
+  name: string;
+  email: string;
+  created_at: string;
+};
+
 export default function UserList() {
   const { data, isLoading, isError } = useQuery("users", async () => {
     const response = await fetch("http://localhost:3000/api/users");
-    const data = response.json();
-    return data;
+    const data = await response.json();
+
+    const users = data.users.map((user) => {
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: new Date(user.createdAt).toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        }),
+      };
+    });
+
+    return users;
   });
 
   const isWideVersion = useBreakpointValue({
@@ -84,31 +104,33 @@ export default function UserList() {
                 </Thead>
 
                 <Tbody>
-                  <Tr>
-                    <Td px={["4", "4", "6"]}>
-                      <Checkbox colorScheme="pink" />
-                    </Td>
-                    <Td>
-                      <Box>
-                        <Text fontWeight="bold">Gustavo Carvalho</Text>
-                        <Text fontSize="small" color="gray.300">
-                          gustavocrvl42@gmail.com
-                        </Text>
-                      </Box>
-                    </Td>
-                    {isWideVersion && <Td>04 de Abril, 2021</Td>}
-                    {isWideVersion && (
-                      <Td>
-                        <Button
-                          as="a"
-                          size="sm"
-                          fontSize="sm"
-                          colorScheme="purple"
-                          leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                        ></Button>
+                  {data.map((user) => (
+                    <Tr key={user.id}>
+                      <Td px={["4", "4", "6"]}>
+                        <Checkbox colorScheme="pink" />
                       </Td>
-                    )}
-                  </Tr>
+                      <Td>
+                        <Box>
+                          <Text fontWeight="bold">{user.name}</Text>
+                          <Text fontSize="small" color="gray.300">
+                            {user.email}
+                          </Text>
+                        </Box>
+                      </Td>
+                      {isWideVersion && <Td>{user.createdAt}</Td>}
+                      {isWideVersion && (
+                        <Td>
+                          <Button
+                            as="a"
+                            size="sm"
+                            fontSize="sm"
+                            colorScheme="purple"
+                            leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                          ></Button>
+                        </Td>
+                      )}
+                    </Tr>
+                  ))}
                 </Tbody>
               </Table>
 
