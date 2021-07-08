@@ -14,6 +14,7 @@ import {
   Tbody,
   Spinner,
   useBreakpointValue,
+  IconButton
 } from "@chakra-ui/react";
 import { RiAddLine, RiEditLine } from "react-icons/ri";
 import Link from "next/link";
@@ -23,6 +24,7 @@ import { Pagination } from "../../components/Pagination";
 import { Sidebar } from "../../components/Sidebar";
 import { useEffect } from "react";
 import { useUsers } from "../../services/hooks/useUsers";
+import { useState } from "react";
 
 type User = {
   name: string;
@@ -31,7 +33,9 @@ type User = {
 };
 
 export default function UserList() {
-  const { data, isLoading, isFetching, isError } = useUsers();
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, isFetching, isError } = useUsers(page);
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -89,7 +93,7 @@ export default function UserList() {
                 </Thead>
 
                 <Tbody>
-                  {data.map((user) => (
+                  {data.users.map((user) => (
                     <Tr key={user.id}>
                       <Td px={["4", "4", "6"]}>
                         <Checkbox colorScheme="pink" />
@@ -105,13 +109,15 @@ export default function UserList() {
                       {isWideVersion && <Td>{user.createdAt}</Td>}
                       {isWideVersion && (
                         <Td>
-                          <Button
+                          <IconButton
                             as="a"
                             size="sm"
                             fontSize="sm"
                             colorScheme="purple"
-                            leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                          ></Button>
+                            aria-label="Edit"
+                            borderRadius="md"
+                            icon={<Icon as={RiEditLine} fontSize="16" />}
+                          />
                         </Td>
                       )}
                     </Tr>
@@ -120,9 +126,9 @@ export default function UserList() {
               </Table>
 
               <Pagination
-                totalCountOfRegisters={200}
-                currentPage={4}
-                onPageChange={() => {}}
+                totalCountOfRegisters={data.totalCount}
+                currentPage={page}
+                onPageChange={setPage}
               />
             </>
           )}
