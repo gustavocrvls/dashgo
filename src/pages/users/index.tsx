@@ -24,10 +24,11 @@ import { RiAddLine, RiEditLine } from "react-icons/ri";
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Sidebar } from "../../components/Sidebar";
-import { useUsers } from "../../services/hooks/useUsers";
+import { getUsers, useUsers } from "../../services/hooks/useUsers";
 
 import { queryClient } from "../../services/queryClient";
 import { api } from "../../services/api";
+import { GetServerSideProps } from "next";
 
 type User = {
   name: string;
@@ -35,10 +36,17 @@ type User = {
   created_at: string;
 };
 
-export default function UserList() {
+interface UserListProps {
+  users: User[],
+  totalCount: number
+}
+
+export default function UserList({ users }: UserListProps) {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isFetching, isError } = useUsers(page);
+  const { data, isLoading, isFetching, isError } = useUsers(page, {
+    initialData: users,
+  });
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -55,7 +63,7 @@ export default function UserList() {
       {
         staleTime: 1000 * 60 * 10, // 10 min
       }
-    );
+    ); 
   }
 
   return (
@@ -156,3 +164,14 @@ export default function UserList() {
     </Box>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const { users, totalCount } = await getUsers(1);
+
+  return {
+    props: {
+      users,
+      totalCount,
+    },
+  };
+};
