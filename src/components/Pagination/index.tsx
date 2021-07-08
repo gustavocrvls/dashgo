@@ -11,8 +11,6 @@ interface PaginationProps {
 const siblingsCount = 1;
 
 function generatePagesArray(from: number, to: number) {
-  console.log(to, from);
-
   return [...new Array(to - from)]
     .map((_, index) => {
       return from + index + 1;
